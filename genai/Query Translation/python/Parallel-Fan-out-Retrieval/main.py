@@ -112,7 +112,7 @@ combined_answer = "\n\n".join(unique_page_contents)
 
 print("combined_query reterival (Unique Documents Filtered)")
 print("-------------------------------------------------------------")
-# print(combined_answer) # Uncomment to see the retrieved context
+print(combined_answer) # Uncomment to see the retrieved context
 
 # 6. ANSWER GENERATION (LLM-2)
 # Define the final prompt for the Answer Generation phase [cite: 55, 146]
