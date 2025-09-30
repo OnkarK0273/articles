@@ -1,16 +1,16 @@
-from dotenv import load_dotenv
-from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
-from langchain_qdrant import QdrantVectorStore
 from langchain_core.prompts import ChatPromptTemplate
-from langchain.load import dumps, loads
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+from dotenv import load_dotenv
 from langchain_core.output_parsers import StrOutputParser
+from langchain_qdrant import QdrantVectorStore
 from operator import itemgetter
+from langchain.load import dumps, loads
 
-# --- Load environment variables ---
+# Load environment variables
 load_dotenv()
 
-# --- Multi-query generation prompt ---
-multi_query_template = """
+# --- Query Generation Prompt ---
+query_generation_template = """
 You are a helpful assistant that generates multiple search queries based on a single input query.
 Generate multiple search queries (3 queries) related to: {question}
 Output (only generate queries):
@@ -18,7 +18,7 @@ query1
 query2
 query3
 """
-multi_query_prompt = ChatPromptTemplate.from_template(multi_query_template)
+query_prompt = ChatPromptTemplate.from_template(query_generation_template)
 
 # --- LLM and Embedding setup ---
 llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-lite")
@@ -26,7 +26,7 @@ embedder = GoogleGenerativeAIEmbeddings(model="gemini-embedding-001")
 
 # --- Query Generation Chain ---
 generate_queries_chain = (
-    multi_query_prompt
+    query_prompt
     | llm
     | StrOutputParser()
     | (lambda output: output.split("\n"))
@@ -40,30 +40,40 @@ vector_store = QdrantVectorStore.from_existing_collection(
 )
 retriever = vector_store.as_retriever()
 
-# --- Utility: Unique union of retrieved documents ---
-def get_unique_union(documents: list[list]):
+# --- Reciprocal Rank Fusion Function ---
+def reciprocal_rank_fusion(results: list[list], k=60):
     """
-    Flattens a list of lists of documents, removes duplicates, and returns unique documents.
+    Combines multiple lists of ranked documents using Reciprocal Rank Fusion (RRF).
+    Documents appearing in multiple lists get higher scores.
     """
-    flattened_docs = [dumps(doc) for sublist in documents for doc in sublist]
-    unique_docs = list(set(flattened_docs))
-    return [loads(doc) for doc in unique_docs]
+    fused_scores = {}
+    for docs in results:
+        for rank, doc in enumerate(docs):
+            doc_str = dumps(doc)
+            if doc_str not in fused_scores:
+                fused_scores[doc_str] = 0
+            fused_scores[doc_str] += 1 / (rank + k)
+    reranked_results = [
+        (loads(doc), score)
+        for doc, score in sorted(fused_scores.items(), key=lambda x: x[1], reverse=True)
+    ]
+    return reranked_results
 
-# --- Retrieval chain ---
+# --- Retrieval Chain ---
 retrieval_chain = (
     generate_queries_chain
     | retriever.map()
-    | get_unique_union
+    | reciprocal_rank_fusion
 )
 
-# --- Prompt for final answer ---
+# --- Prompt for Final Answer ---
 answer_template = """Answer the following question based on this context:
 {context}
 Question: {question}
 """
 answer_prompt = ChatPromptTemplate.from_template(answer_template)
 
-# --- Final RAG chain: retrieve context, format prompt, get answer from LLM ---
+# --- Final RAG chain: retrieve context, format prompt, get answer from LLM  ---
 final_rag_chain = (
     {
         "context": retrieval_chain,
@@ -74,8 +84,8 @@ final_rag_chain = (
     | StrOutputParser()
 )
 
-# --- Run the chain ---
+# --- Run the Chain ---
 if __name__ == "__main__":
-    user_question = "what is js"
+    user_question = "what is javascript"
     answer = final_rag_chain.invoke({"question": user_question})
-    print("Final answer:", answer)
+    print("final-response:", answer)
