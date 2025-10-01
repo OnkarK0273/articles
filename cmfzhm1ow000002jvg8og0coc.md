@@ -83,6 +83,8 @@ It is a straightforward yet highly effective way to overcome the limitation of r
 * because of more relevant context, LLM-2 can generate a more accurate and complete response to the user’s original query.
     
 
+### Code Explanation - [Link](https://onkark.hashnode.dev/query-translation-query-re-writing-code-explanation#heading-1-multi-query-retrieval-parallel-retrieval)
+
 ---
 
 ### The problem in Parallel (Fan-out) Retrieval
@@ -171,6 +173,8 @@ Now we apply formula to each unique document
 
 **blue &gt; green = orange &gt; purple &gt; yellow**
 
+### Code Explanation - [Link](https://onkark.hashnode.dev/query-translation-query-re-writing-code-explanation#heading-2-rag-fusion-multi-query-rrf)
+
 ## 3\. Hypothetical Document Embeddings (**HyDE**)
 
 The core idea of HyDE is to bridge the semantic gap between the short, often vague user query and the long, descriptive documents in the knowledge base. It does this by creating a "middleman" document.
@@ -250,6 +254,8 @@ The system generates the final, grounded answer.
     
 * As a result, **LLM-2 receives more relevant context**, which leads to a **more accurate and focused response**.
     
+
+### Code Explanation - [Link](https://onkark.hashnode.dev/query-translation-query-re-writing-code-explanation#heading-3hypothetical-document-embeddings-hyde)
 
 # Resources
 
