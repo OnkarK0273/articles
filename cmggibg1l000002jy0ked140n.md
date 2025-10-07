@@ -127,7 +127,7 @@ a chain do following things
 
 ```python
 # --- Query Generation Chain ---
-query_genration = ( prompt_decomposition | llm | StrOutputParser() | (lambda x : x.split("\\n") ) ) 
+query_genration = ( prompt_decomposition | llm | StrOutputParser() | (lambda x : x.split("\\n") ) )
 ```
 
 ## 3\. **Prompt for Sub-question Answering**
@@ -248,12 +248,12 @@ if __name__ == "__main__":
 
 <div data-node-type="callout">
 <div data-node-type="callout-emoji">💡</div>
-<div data-node-type="callout-text">this is same step as we discussed in <a target="_self" rel="noopener noreferrer nofollow" href="https://www.notion.so/Query-Translation-Query-Decomposition-Code-Explanation-284af752ca2c8034bc9df1131a7de2b6?pvs=21" style="pointer-events: none">Parallel Query Decomposition</a></div>
+<div data-node-type="callout-text">this is same step as we discussed in <a target="_self" rel="noopener noreferrer nofollow" href="https://onkark.hashnode.dev/query-translation-query-decomposition-code-explanation#heading-1-prompt" style="pointer-events: none">Parallel Query Decomposition</a></div>
 </div>
 
-* [`template_decomposition` - a prompt in](https://www.notion.so/Query-Translation-Query-Decomposition-Code-Explanation-284af752ca2c8034bc9df1131a7de2b6?pvs=21)struction that tells llm to break down [complex questions into 3 sub-questions](https://www.notion.so/Query-Translation-Query-Decomposition-Code-Explanation-284af752ca2c8034bc9df1131a7de2b6?pvs=21)
+* `template_decomposition` - a prompt instruction that tells llm to break down complex questions into 3 sub-questions
     
-* `prompt_decomposition` - `template_decomposition` it wraps around `prompt_decomposition` to u[se it in chain](https://www.notion.so/Query-Translation-Query-Decomposition-Code-Explanation-284af752ca2c8034bc9df1131a7de2b6?pvs=21)
+* `prompt_decomposition` - `template_decomposition` it wraps around `prompt_decomposition` to use it in chain
     
 
 ```python
@@ -273,7 +273,7 @@ prompt_decomposition = ChatPromptTemplate.from_template(template_decomposition)
 
 <div data-node-type="callout">
 <div data-node-type="callout-emoji">💡</div>
-<div data-node-type="callout-text">this is also same step as we discussed in <a target="_self" rel="noopener noreferrer nofollow" href="https://www.notion.so/Query-Translation-Query-Decomposition-Code-Explanation-284af752ca2c8034bc9df1131a7de2b6?pvs=21" style="pointer-events: none">Parallel Query Decomposition</a></div>
+<div data-node-type="callout-text">this is also same step as we discussed in <a target="_self" rel="noopener noreferrer nofollow" href="https://onkark.hashnode.dev/query-translation-query-decomposition-code-explanation#heading-2-query-generation-chain" style="pointer-events: none">Parallel Query Decomposition</a></div>
 </div>
 
 Query Generation Chain do following things
@@ -282,7 +282,7 @@ Query Generation Chain do following things
     
 2. `llm` - run it through llm.
     
-3. [`StrOutput`](https://www.notion.so/Query-Translation-Query-Decomposition-Code-Explanation-284af752ca2c8034bc9df1131a7de2b6?pvs=21)`Parser()` - parse the llm response into string.
+3. `StrOutputParser()` - parse the llm response into string.
     
 4. `(lambda x : x.split("\\n") )` - split the parse output into list of sub-questions.
     
