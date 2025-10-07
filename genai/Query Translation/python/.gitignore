@@ -45,3 +45,6 @@ coverage.xml
 # Misc
 *.bak
 *.tmp
+
+#files
+indexing/pdf
